@@ -30,6 +30,21 @@ class BulkDiscountsController < ApplicationController
     redirect_to merchant_bulk_discounts_path(@merchant)
   end
 
+  def edit
+    @merchant = Merchant.find(params[:merchant_id])
+    @discount = BulkDiscount.find(params[:id])
+  end
+
+  def update
+    @discount = BulkDiscount.find(params[:id])
+    if @discount.update(bulk_discount_params)
+      redirect_to merchant_bulk_discount_path(@discount.merchant_id, @discount)
+    else
+      flash.notice = "Please fill in all fields properly."
+      redirect_to edit_merchant_bulk_discount_path(@discount.merchant_id, @discount)
+    end
+  end
+
   private
   def bulk_discount_params
     params.permit(:name, :discount, :threshold)
