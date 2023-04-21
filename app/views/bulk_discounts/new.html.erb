@@ -13,7 +13,7 @@
 <%= form_with url: merchant_bulk_discounts_path(@merchant), method: :post do |form| %>
   <%= form.label :name %>
   <%= form.text_field :name %>
-  <%= form.label :discount %>
+  <%= form.label :discount, "Discount (as a decimal)" %>
   <%= form.number_field :discount, step: 'any' %>
   <%= form.label :threshold %>
   <%= form.number_field :threshold %>
