@@ -6,4 +6,10 @@ RSpec.describe BulkDiscount, type: :model do
     it { should have_many(:items).through(:merchant) }
   end
 
+  describe 'validations' do
+    it { should validate_presence_of :name }
+    it { should validate_numericality_of :discount }
+    it { should validate_numericality_of :threshold }
+  end
+
 end

@@ -66,7 +66,116 @@ RSpec.describe "Bulk Discount Index Page", type: :feature do
       expect(current_path).to eq(merchant_bulk_discount_path(@merchant_1, @discount_1))
     end
   end
+
+  describe "User Story 2" do
+    before (:each) do
+      @merchant_1 = Merchant.create!(name: "All the Things")
+      @discount_1 = @merchant_1.bulk_discounts.create!(name: "10% off 10 or more", threshold: 10, discount: 0.10)
+      @merchant_2 = Merchant.create!(name: "Junk and Stuff")
+      @discount_2 = @merchant_2.bulk_discounts.create!(name: "20% off 20 or more", threshold: 20, discount: 0.20)
+      @discount_3 = @merchant_1.bulk_discounts.create!(name: "30% off 30 or more", threshold: 30, discount: 0.30)
+    end
+
+    it "When I visit my bulk discounts index page then I see a link to create a new discount" do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within("#discounts") do
+        expect(page).to have_link("New Discount")
+      end
+
+      visit merchant_bulk_discounts_path(@merchant_2)
+
+      within("#discounts") do
+        expect(page).to have_link("New Discount")
+      end
+    end
+
+    it "When I click this link then I am taken to a new page where I see a form to add a new bulk discount" do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      click_link ("New Discount")
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_1))
+
+      visit merchant_bulk_discounts_path(@merchant_2)
+
+      click_link ("New Discount")
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_2))
+    end
+
+    it "When I fill in the form with valid data then I am redirected back to the bulk discount index and I see my new bulk discount listed" do
+      visit new_merchant_bulk_discount_path(@merchant_1)
+
+      fill_in "Name", with: "40% off 40 or more"
+      fill_in "Threshold", with: 40
+      fill_in "Discount", with: 0.40
+
+      click_button "Submit"
+
+      expect(current_path).to eq(merchant_bulk_discounts_path(@merchant_1))
+
+      within ("#discounts") do
+        expect(page).to have_content("40% off 40 or more")
+        expect(page).to have_content("40")
+        expect(page).to have_content("40%")
+      end
+
+      visit new_merchant_bulk_discount_path(@merchant_2)
+
+      fill_in "Name", with: "40% off 40 or more"
+      fill_in "Threshold", with: 40
+      fill_in "Discount", with: 0.40
+
+      click_button "Submit"
+
+      expect(current_path).to eq(merchant_bulk_discounts_path(@merchant_2))
+
+      within ("#discounts") do
+        expect(page).to have_content("40% off 40 or more")
+        expect(page).to have_content("40")
+        expect(page).to have_content("40%")
+      end
+    end
+
+    it "I am given an alert if all fields are not filled in" do
+      visit new_merchant_bulk_discount_path(@merchant_1)
+
+      fill_in "Name", with: ""
+      fill_in "Threshold", with: 40
+      fill_in "Discount", with: 0.40
+
+      click_button "Submit"
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_1))
+      expect(page).to have_content("Please fill in all fields properly.")
+    end
+
+    it "I am given an alert if the threshold is not a number" do
+      visit new_merchant_bulk_discount_path(@merchant_1)
+
+      fill_in "Name", with: "Big Discount"
+      fill_in "Threshold", with: "forty"
+      fill_in "Discount", with: 0.40
+
+      click_button "Submit"
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_1))
+      expect(page).to have_content("Please fill in all fields properly.")
+    end
+
+    it "I am given an alert if the discount is not a number" do
+      visit new_merchant_bulk_discount_path(@merchant_1)
+
+      fill_in "Name", with: "Big Discount"
+      fill_in "Threshold", with: 40
+      fill_in "Discount", with: "forty"
+
+      click_button "Submit"
+
+      expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant_1))
+      expect(page).to have_content("Please fill in all fields properly.")
+    end
+  end
 end
-
-
 
