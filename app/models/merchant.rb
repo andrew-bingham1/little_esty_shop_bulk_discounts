@@ -5,6 +5,7 @@ class Merchant < ApplicationRecord
   has_many :invoices, through: :invoice_items
   has_many :customers, through: :invoices
   has_many :transactions, through: :invoices
+  has_many :bulk_discounts
 
   enum status: [:enabled, :disabled]
 
@@ -52,5 +53,9 @@ class Merchant < ApplicationRecord
             .group("invoices.created_at")
             .order("revenue desc", "invoices.created_at desc")
             .first&.created_at&.to_date
+  end
+
+  def merchants_bulk_discounts
+    bulk_discounts
   end
 end
