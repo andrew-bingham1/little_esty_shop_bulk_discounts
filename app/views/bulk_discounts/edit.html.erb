@@ -10,12 +10,14 @@
   </nav>
 </div>
 
-<div id="discount_info">
-  <h1>Discount Details</h1>
-    <ul>
-      <li><b><%= @discount.name %></b></li>
-      <li> Percent Off: <%= number_to_percentage(@discount.discount * 100, precision: 0)%> </li>
-      <li> Item Threshold: <%= @discount.threshold %> </li>
-      <li> <%= link_to "Edit Discount", edit_merchant_bulk_discount_path(@merchant, @discount)%>
-    </ul>
+<div id="update_form">
+  <%= form_with url: merchant_bulk_discount_path(@merchant, @discount), method: :patch do |form| %>
+    <%= form.label :name %>
+    <%= form.text_field :name, value: @discount.name%>
+    <%= form.label :discount, "Discount (as a decimal)" %>
+    <%= form.number_field :discount, step: 'any', value: @discount.discount%>
+    <%= form.label :threshold %>
+    <%= form.number_field :threshold, value: @discount.threshold %>
+    <%= form.submit "Update Discount" %>
+  <% end %>
 </div>
