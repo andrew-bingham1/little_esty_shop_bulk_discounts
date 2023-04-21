@@ -209,8 +209,8 @@ RSpec.describe "Bulk Discount Index Page", type: :feature do
       visit merchant_bulk_discounts_path(@merchant_1)
 
       within("#discounts") do
-        expect(page).to have_content("10% off 10 or more")
-        expect(page).to have_content("30% off 30 or more")
+        expect(page).to have_content(@discount_1.name)
+        expect(page).to have_content(@discount_3.name)
       end
       
       within("##{@discount_1.id}") do
