@@ -10,6 +10,7 @@ describe Merchant do
     it {should have_many(:invoices).through(:invoice_items)}
     it { should have_many(:customers).through(:invoices) }
     it { should have_many(:transactions).through(:invoices) }
+    it { should have_many :bulk_discounts }
 
   end
 
@@ -157,6 +158,20 @@ describe Merchant do
 
     it "best_day" do
       expect(@merchant1.best_day).to eq(@invoice_8.created_at.to_date)
+    end
+
+    it "bulk_discounts" do
+      @merchant_1 = Merchant.create!(name: "All the Things")
+      @discount_1 = @merchant_1.bulk_discounts.create!(name: "10% off 10 or more", threshold: 10, discount: 0.10)
+      @merchant_2 = Merchant.create!(name: "Junk and Stuff")
+      @discount_2 = @merchant_2.bulk_discounts.create!(name: "20% off 20 or more", threshold: 20, discount: 0.20)
+
+      expect(@merchant_1.merchants_bulk_discounts).to eq([@discount_1])
+      expect(@merchant_2.merchants_bulk_discounts).to eq([@discount_2])
+
+      @discount_3 = @merchant_1.bulk_discounts.create!(name: "20% off 20 or more", threshold: 20, discount: 0.20)
+
+      expect(@merchant_1.merchants_bulk_discounts).to eq([@discount_1, @discount_3])
     end
   end
 end
