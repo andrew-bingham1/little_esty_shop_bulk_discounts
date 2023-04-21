@@ -10,9 +10,11 @@
   </nav>
 </div>
 
-<h1>Discount Details</h1>
-  <ul>
-    <li><b><%= @discount.name %></b></li>
-    <li> Percent Off: <%= number_to_percentage(@discount.discount * 100, precision: 0)%> </li>
-    <li> Item Threshold: <%= @discount.threshold %> </li>
-  </ul>
+<div id="discount_info">
+  <h1>Discount Details</h1>
+    <ul>
+      <li><b><%= @discount.name %></b></li>
+      <li> Percent Off: <%= number_to_percentage(@discount.discount * 100, precision: 0)%> </li>
+      <li> Item Threshold: <%= @discount.threshold %> </li>
+    </ul>
+</div>
