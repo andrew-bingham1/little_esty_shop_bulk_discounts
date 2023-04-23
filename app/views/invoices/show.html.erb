@@ -19,8 +19,19 @@
   </div>
   <br>
 
+  <div id="invoice-details">
   <p> Created on: <%= @invoice.created_at.strftime("%A, %B %-d, %Y") %></p>
-  <p>Total Revenue: <%= @invoice.total_revenue %></p>
+  <p> Total Revenue: <%= @invoice.total_revenue %></p>
+  <p> Total Revenue for this Merchant: <%= @invoice.merchant_invoice_revenue(@merchant) %></p>
+  <p> Discounted Revenue for this Merchant:
+    <% if @bulk_discount.nil? %>
+      <p><b>No Discount Applied<b></p>
+    <% else %>
+      <%= @invoice.discounted_invoice_revenue(@merchant, @bulk_discount) %>
+    <% end %>
+  </div>
+
+
 
 
   <h4>Customer:</h4>
