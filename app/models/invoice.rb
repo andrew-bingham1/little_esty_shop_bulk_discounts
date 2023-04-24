@@ -21,20 +21,11 @@ class Invoice < ApplicationRecord
                  .sum("invoice_items.unit_price * invoice_items.quantity")
   end
 
-  def find_merchant_discount(merchant)
-    BulkDiscount.joins(:invoices)
-            .where("merchants.id = ?", merchant.id)
-            .where("invoices.id = ?", self.id)
-            .where("invoice_items.quantity >= bulk_discounts.threshold")
-            .order("bulk_discounts.threshold DESC")
-            .first
-  end
-
-  def discounted_invoice_revenue(merchant, bulk_discount)
-    discount = (1 - bulk_discount.discount) 
-    invoice_items.joins(:item)
-                 .where("items.merchant_id = ?", merchant)
-                 .sum("invoice_items.unit_price * invoice_items.quantity * #{discount}")
-                 .round(2)
+  def discounted_invoice_revenue(merchant)
+    discounted_revenue = invoice_items.joins(:item, :bulk_discounts)
+                                      .select("invoice_items.*,((invoice_items.unit_price * invoice_items.quantity) * MAX(bulk_discounts.discount)) AS discounted_revenue")
+                                      .where("invoice_items.quantity >= bulk_discounts.threshold AND items.merchant_id = ?", merchant)
+                                      .group("invoice_items.id")
+    merchant_invoice_revenue(merchant) - discounted_revenue.sum(&:discounted_revenue)
   end
 end
