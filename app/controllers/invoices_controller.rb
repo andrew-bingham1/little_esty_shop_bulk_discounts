@@ -9,7 +9,6 @@ class InvoicesController < ApplicationController
   def show
     @customer = @invoice.customer
     @invoice_item = InvoiceItem.where(invoice_id: params[:id]).first
-    @bulk_discount = @invoice.find_merchant_discount(@merchant)
   end
 
   def update
