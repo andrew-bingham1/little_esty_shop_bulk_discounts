@@ -52,8 +52,8 @@ RSpec.describe 'invoices show' do
     @transaction7 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_7.id)
     @transaction8 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_8.id)
 
-    @bulk_discount_1 = BulkDiscount.create!(name: "5% off 10 or more", discount: 0.05, threshold: 10, merchant_id: @merchant1.id)
-    @bulk_discount_2 = BulkDiscount.create!(name: "10% off 20 or more", discount: 0.10, threshold: 20, merchant_id: @merchant1.id)
+    @bulk_discount_1 = BulkDiscount.create!(name: "5% off 5 or more", discount: 0.05, threshold: 5, merchant_id: @merchant1.id)
+    @bulk_discount_2 = BulkDiscount.create!(name: "10% off 10 or more", discount: 0.10, threshold: 10, merchant_id: @merchant1.id)
   end
 
   it "shows the invoice information" do
@@ -115,7 +115,7 @@ RSpec.describe 'invoices show' do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
     within("#invoice-details") do
-      expect(page).to have_content(@invoice_1.discounted_invoice_revenue(@merchant1, @bulk_discount_1))
+      expect(page).to have_content(@invoice_1.discounted_invoice_revenue(@merchant1))
     end
 
     @ii_1.update(quantity: 20)
@@ -123,25 +123,48 @@ RSpec.describe 'invoices show' do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
     within("#invoice-details") do
-      expect(page).to have_content(@invoice_1.discounted_invoice_revenue(@merchant1, @bulk_discount_2))
+      expect(page).to have_content(@invoice_1.discounted_invoice_revenue(@merchant1))
     end
   end
 
-  it "shows 'No Discount Applied' if there are no valid discounts" do
-    @ii_1.update(quantity: 1)
-    @ii_11.update(quantity: 1)
+  it 'next to each invoice item I see a link to the show page for the bulk discount that was applied (if any)' do
+    visit merchant_invoice_path(@merchant1, @invoice_1)
+
+    within("#the-status-#{@ii_1.id}") do
+      expect(page).to have_link("#{@bulk_discount_1.name}")
+    end
+
+    within("#the-status-#{@ii_11.id}") do
+      expect(page).to have_link("#{@bulk_discount_2.name}")
+    end
+  end
+
+  it 'shows no link if no discount was applied' do
+    update = @ii_1.update(quantity: 4)
 
     visit merchant_invoice_path(@merchant1, @invoice_1)
-   
-    within("#invoice-details") do
+
+    within("#the-status-#{@ii_1.id}") do
+      expect(page).to_not have_link("#{@bulk_discount_1.name}")
       expect(page).to have_content("No Discount Applied")
     end
   end
+
+  it 'link takes me to the bulk discount show page' do
+    visit merchant_invoice_path(@merchant1, @invoice_1)
+
+    within("#the-status-#{@ii_1.id}") do
+      click_link(@bulk_discount_1.name)
+    end
+
+    expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @bulk_discount_1))
+
+    visit merchant_invoice_path(@merchant1, @invoice_1)
+    
+    within("#the-status-#{@ii_11.id}") do
+      click_link(@bulk_discount_2.name)
+    end
+
+    expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @bulk_discount_2))
+  end
 end
-
-# 6: Merchant Invoice Show Page: Total Revenue and Discounted Revenue
-
-# As a merchant
-# When I visit my merchant invoice show page
-# Then I see the total revenue for my merchant from this invoice (not including discounts)
-# And I see the total discounted revenue for my merchant from this invoice which includes bulk discounts in the calculation
