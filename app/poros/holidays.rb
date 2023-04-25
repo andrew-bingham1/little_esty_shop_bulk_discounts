@@ -6,9 +6,9 @@ class Holidays
 
   def initialize(data)
     @data = data
-    @first_holiday = @data[0]
-    @second_holiday = @data[1]
-    @third_holiday = @data[2]
+    @first_holiday = data[0]
+    @second_holiday = data[1]
+    @third_holiday = data[2]
   end
 
 end
