@@ -115,7 +115,7 @@ RSpec.describe 'invoices show' do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
     within("#invoice-details") do
-      expect(page).to have_content(@invoice_1.discounted_invoice_revenue(@merchant1))
+      expect(page).to have_content(@invoice_1.discounted_merchant_invoice_revenue(@merchant1))
     end
 
     @ii_1.update(quantity: 20)
@@ -123,7 +123,7 @@ RSpec.describe 'invoices show' do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
     within("#invoice-details") do
-      expect(page).to have_content(@invoice_1.discounted_invoice_revenue(@merchant1))
+      expect(page).to have_content(@invoice_1.discounted_merchant_invoice_revenue(@merchant1))
     end
   end
 
