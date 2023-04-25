@@ -45,7 +45,6 @@ group :development, :test do
   gem 'simplecov'
   gem 'net-http'
   gem 'hirb'
-  gem 'httparty'
 end
 
 group :development do
