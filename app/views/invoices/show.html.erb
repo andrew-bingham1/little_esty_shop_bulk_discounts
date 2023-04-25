@@ -22,8 +22,8 @@
   <div id="invoice-details">
   <p> Created on: <%= @invoice.created_at.strftime("%A, %B %-d, %Y") %></p>
   <p> Total Revenue: <%= @invoice.total_revenue %></p>
-  <p> Total Revenue for this Merchant: <%= @invoice.merchant_invoice_revenue(@merchant) %></p>
-  <p> Discounted Revenue for this Merchant: <%= @invoice.discounted_merchant_invoice_revenue(@merchant) %>
+  <p> Total Revenue for this Merchant: <%= number_to_currency(@invoice.merchant_invoice_revenue(@merchant)) %></p>
+  <p> Discounted Revenue for this Merchant: <%= number_to_currency(@invoice.discounted_merchant_invoice_revenue(@merchant)) %>
   </div>
 
 
