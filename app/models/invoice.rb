@@ -22,21 +22,21 @@ class Invoice < ApplicationRecord
   end
 
   def discounted_merchant_invoice_revenue(merchant)
-    discounted_revenue = self.invoice_items.joins(:item, :bulk_discounts)
-                                            .select("invoice_items.*,((invoice_items.unit_price * invoice_items.quantity) * MAX(bulk_discounts.discount)) AS discounted_revenue")
-                                            .where("invoice_items.quantity >= bulk_discounts.threshold AND items.merchant_id = ?", merchant)
-                                            .group("invoice_items.id")
+    merchant_discounted_revenue = invoice_items.joins(:item, :bulk_discounts)
+                                               .select("invoice_items.*,((invoice_items.unit_price * invoice_items.quantity) * MAX(bulk_discounts.discount)) AS discounted_revenue")
+                                               .where("invoice_items.quantity >= bulk_discounts.threshold AND items.merchant_id = ?", merchant)
+                                               .group("invoice_items.id")
 
-    self.merchant_invoice_revenue(merchant) - discounted_revenue.sum { |invoice_item| invoice_item.discounted_revenue }
+    merchant_invoice_revenue(merchant) - merchant_discounted_revenue.sum(&:discounted_revenue)
   end
 
   def total_discounted_revenue
-    total_discounted_revenue = self.invoice_items.joins(:item, :bulk_discounts)
+    total_discounted_revenue = invoice_items.joins(:item, :bulk_discounts)
                                             .select("invoice_items.*,((invoice_items.unit_price * invoice_items.quantity) * MAX(bulk_discounts.discount)) AS discounted_revenue")
                                             .where("invoice_items.quantity >= bulk_discounts.threshold")
                                             .group("invoice_items.id")
 
-    self.total_revenue - total_discounted_revenue.sum { |invoice_item| invoice_item.discounted_revenue }
+    total_revenue - total_discounted_revenue.sum(&:discounted_revenue)
   end
 
 end

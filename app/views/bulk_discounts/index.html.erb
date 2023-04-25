@@ -10,6 +10,15 @@
   </nav>
 </div>
 
+<div id="holidays">
+  <h2>Upcoming Holidays</h2>
+  <ol>
+    <li><%= @holidays.first_holiday[:name]%> - <%= @holidays.first_holiday[:date] %></li>
+    <li><%= @holidays.second_holiday[:name]%> - <%= @holidays.second_holiday[:date] %></li>
+    <li><%= @holidays.third_holiday[:name]%> - <%= @holidays.third_holiday[:date] %></li>
+  </ol>
+</div>
+
 <div id="discounts">
   <h2>Discounts</h2>
   <%= link_to "New Discount", new_merchant_bulk_discount_path(@merchant) %>

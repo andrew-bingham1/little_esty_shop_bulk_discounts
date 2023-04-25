@@ -6,7 +6,7 @@ RSpec.describe "Bulk Discount Index Page", type: :feature do
       @merchant_1 = Merchant.create!(name: "All the Things")
       @discount_1 = @merchant_1.bulk_discounts.create!(name: "10% off 10 or more", threshold: 10, discount: 0.10)
       @merchant_2 = Merchant.create!(name: "Junk and Stuff")
-      @discount_2 = @merchant_2.bulk_discounts.create!(name: "20% off 20 or more", threshold: 20, discount: 0.20)
+      @discount_2 = @merchant_2.bulk_discounts.create!(name: "25% off 25 or more", threshold: 25, discount: 0.25)
       @discount_3 = @merchant_1.bulk_discounts.create!(name: "30% off 30 or more", threshold: 30, discount: 0.30)
     end
 
@@ -222,6 +222,47 @@ RSpec.describe "Bulk Discount Index Page", type: :feature do
       within("#discounts") do
         expect(page).to have_content(@discount_3.name)
         expect(page).to_not have_content(@discount_1.name)
+      end
+    end
+  end
+
+  describe "User Story 9" do
+    before (:each) do
+      @merchant_1 = Merchant.create!(name: "All the Things")
+      @discount_1 = @merchant_1.bulk_discounts.create!(name: "10% off 10 or more", threshold: 10, discount: 0.10)
+      @merchant_2 = Merchant.create!(name: "Junk and Stuff")
+      @discount_2 = @merchant_2.bulk_discounts.create!(name: "20% off 20 or more", threshold: 20, discount: 0.20)
+      @discount_3 = @merchant_1.bulk_discounts.create!(name: "30% off 30 or more", threshold: 30, discount: 0.30)
+      @holidays = HolidaysBuilder.next_holidays
+    end
+
+    it "I see a section with a header of 'Upcoming Holidays'" do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within("#holidays") do
+        expect(page).to have_content("Upcoming Holidays")
+      end
+    end
+
+    it "In this section the name and date of the next 3 upcoming US holidays are listed" do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within("#holidays") do
+        expect(page).to have_content(@holidays.first_holiday[:name])
+        expect(page).to have_content(@holidays.first_holiday[:date])
+        expect(page).to have_content(@holidays.second_holiday[:name])
+        expect(page).to have_content(@holidays.second_holiday[:date])
+        expect(page).to have_content(@holidays.third_holiday[:name])
+        expect(page).to have_content(@holidays.third_holiday[:date])
+      end
+    end
+
+    it 'they appear in order of closest date first' do
+      visit merchant_bulk_discounts_path(@merchant_1)
+
+      within("#holidays") do
+        expect(@holidays.first_holiday[:name]).to appear_before(@holidays.second_holiday[:name])
+        expect(@holidays.second_holiday[:name]).to appear_before(@holidays.third_holiday[:name])
       end
     end
   end
