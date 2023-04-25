@@ -19,8 +19,7 @@ class InvoiceItem < ApplicationRecord
 
   def find_invoice_item_discount(merchant)
     BulkDiscount.joins(:invoice_items)
-                .where("items.merchant_id = ?", merchant.id)
-                .where("invoice_items.id = ?", self.id)
+                .where("items.merchant_id = ? AND invoice_items.id = ?", merchant.id, self.id)
                 .where("invoice_items.quantity >= bulk_discounts.threshold")
                 .order("bulk_discounts.threshold DESC")
                 .first
